@@ -4,14 +4,37 @@ from multiprocessing import Process
 import time
 from SDETAssignment.SDETAssignment import API_Requests as req, Helpers as hp
 import math
+
+
 from requests_futures.sessions import FuturesSession
 
 
-def test_post_to_hash_accepts_password():
+def test_post_to_hash_accepts_valid_password():
     file_name = 'valid_pswd_string_only.JSON'
     res = req.get_post_response(file_name)
     # assert the request is accepted
     assert res.status_code == 200 | res.status_code == 201, "Request was not successful"
+
+
+def test_post_to_hash_does_not_accept_empty_password():
+    file_name = 'empty_string.JSON'
+    res = req.get_post_response(file_name)
+    # assert the request is accepted
+    assert res.status_code == 400, "System did not return a 400 code for empty string password"
+
+
+def test_post_to_hash_accepts_special_characters_as_password():
+    file_name = 'special_characters.JSON'
+    res = req.get_post_response(file_name)
+    # assert the request is accepted
+    assert res.status_code == 200, "System did not accept special characters as a password string"
+
+
+def test_post_to_hash_accepts_long_string_as_password():
+    file_name = 'long_string.JSON'
+    res = req.get_post_response(file_name)
+    # assert the request is accepted
+    assert res.status_code == 200, "System did not accept long string as a password"
 
 
 def verify_post_to_hash_returns_job_identifier_immediately() -> object:
