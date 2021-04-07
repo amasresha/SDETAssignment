@@ -6,6 +6,10 @@ from SDETAssignment.SDETAssignment import Helpers as hp
 base_uri = "http://192.168.1.228:8088"
 
 
+def base_url():
+    return "http://192.168.1.228:8088"
+
+
 # POST requests
 
 def get_post_response(file_name):
@@ -42,13 +46,11 @@ def shutdown():
     data = 'shutdown'
     print('shutting down')
     print(datetime.datetime.now())
-    shut_down= requests.post(url, data=data)
-    stat.shutdown_status=shut_down.status_code
+    shut_down = requests.post(url, data=data)
+    stat.shutdown_status = shut_down.status_code
     return shut_down
 
 
 class stat:
-    post_status =""
-    shutdown_status=""
-
-
+    post_status = ""
+    shutdown_status = ""

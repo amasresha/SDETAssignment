@@ -4,8 +4,7 @@ from multiprocessing import Process
 import time
 from SDETAssignment.SDETAssignment import API_Requests as req, Helpers as hp
 import math
-
-
+import pytest
 from requests_futures.sessions import FuturesSession
 
 
@@ -124,12 +123,23 @@ def verify_it_rejects_new_requests_while_shutting_down():
     assert (shut_down_status_code == 200 and res.status_code == 404), "Graceful shutdown is not respected"
 
 
-def verify_it_supports_multiple_connections_simultaneously():
+def verify_it_supports_multiple_post_requests_simultaneously():
     url = req.base_url() + "/hash"
     with FuturesSession() as session:
         futures = [session.post(url, data='{"password":"angrymonkey"}') for _ in range(100)]
         for future in futures:
             val = future.result().status_code
-            #print(datetime.datetime.now())
-            assert val==200,"one or more calls are failing"
+            # print(datetime.datetime.now())
+            assert val == 200, "one or more calls are failing"
 
+
+def verify_it_supports_multiple_get_requests_simultaneously():
+    file_name = 'valid_pswd_string_only.JSON'
+    res = req.get_post_response(file_name)
+    work_id = res.content.decode('UTF-8')
+    with FuturesSession() as session:
+        futures = [session.req.get_encoded_password(work_id) for _ in range(5)]
+        for future in futures:
+            val = future.result().status_code
+            print(datetime.datetime.now())
+            assert val == 200, "one or more calls are failing"
