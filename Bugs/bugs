@@ -25,7 +25,7 @@ The following are the bugs I observed:
 8. When server is down, the post request doesn't return appropriate status code(503).
     Associated automation script: def test_it_rejects_new_requests_while_shutting_down():
 
-9. API response time is not reasonable for 50 or more for concurrent post requests.
+9. API response time is not reasonable for 50 or more for concurrent post requests, and it times out even for higher number of requests.
    Associated automation script: def test_it_supports_multiple_concurrent_post_requests():
 
 10.API response time is not reasonable for 50 or more for concurrent get requests.
