@@ -2,7 +2,7 @@ import json
 import datetime
 from multiprocessing import Process
 import time
-from SDETAssignment.SDETAssignment import API_Requests as req, Helpers as hp
+from SDETAssignment import API_Requests as req, Helpers as hp
 import math
 
 

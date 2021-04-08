@@ -1,0 +1,34 @@
+The following are the bugs I observed:
+======================================
+
+1. When we pass empty string ("") as a password, it returns a job identifier.
+   Associated automation script: def test_post_to_hash_does_not_accept_empty_password():
+
+2. The software accepts most of the special characters as a password. I believe we should only allow industry standards.Therefore, I consider this as a bug.
+    Associated automation script: def test_post_to_hash_accepts_special_characters_as_password():
+
+3.The software accepts a very long string as a password(more than 1000 characters). This slows down the api by increasing the payload. So I consider this a bug.
+   Associated automation script: def test_post_to_hash_accepts_long_string_as_password()
+
+4. When we pass invalid input (like {"user":"<angrymonkey>"}), it returns a job identifier. It returns a valid job identifier for an invalid input
+    Associated automation script: def test_post_to_hash_does_not_accept_invalid_json_file():
+
+5. In the post request, the job identifier is not returned immediately. It gets returned after 5 seconds.
+    Associated automation script: def test_post_to_hash_returns_job_identifier_immediately():
+
+6.The software is not using SHA512 algorithm. The hashed characters count is 88 characters, so it is not sha512.
+    Associated automation script: def test_valid_sha512_hash_is_generated():
+
+7. The stat content-type is not a application/Json type.
+    Associated automation script: def test_get_to_stats_returns_json_type():
+
+8. When server is down, the post request doesn't return appropriate status code(503).
+    Associated automation script: def test_it_rejects_new_requests_while_shutting_down():
+
+9. API response time is not reasonable for 50 or more for concurrent post requests.
+   Associated automation script: def test_it_supports_multiple_concurrent_post_requests():
+
+10.API response time is not reasonable for 50 or more for concurrent get requests.
+   Associated automation script: def test_it_supports_multiple_concurrent_get_requests():
+
+11.
