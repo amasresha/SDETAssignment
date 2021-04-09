@@ -28,7 +28,8 @@ The following are the bugs I observed:
 9. API response time is not reasonable for 50 or more for concurrent post requests, and it times out even for higher number of requests.
    Associated automation script: def test_it_supports_multiple_concurrent_post_requests():
 
-10.API response time is not reasonable for 50 or more for concurrent get requests.
+10.API response time is not reasonable for 50 or more for concurrent get requests. Sometimes, it fails for more than 100 concurrent calls.
    Associated automation script: def test_it_supports_multiple_concurrent_get_requests():
 
-11.
+11.The product version number is not in the correct format. The current version is 0c3d817 (if this the software version).
+    Associated automation script: not automated

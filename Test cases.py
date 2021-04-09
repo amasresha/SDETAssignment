@@ -127,7 +127,61 @@ def test_get_to_stats_returns_correct_average_time():
     assert avg_time >= 5, "The average time is less than 5 seconds. "
 
 
+@pytest.mark.run('first')
+def test_delete_is_not_supported_and_proper_code_is_returned():
+    res = req.get_post_response(file_name)
+    work_id = res.content.decode('UTF-8')
+    resp = req.delete(work_id)
+    assert resp.status_code == 405, "delete is supported or proper error is not displayed"
+
+
+@pytest.mark.run('first')
+def test_put_is_not_supported_and_proper_code_is_returned():
+    resp = req.put(file_name)
+    assert resp.status_code == 405, "PUT is supported or proper error is not displayed"
+
+
+@pytest.mark.run('first')
+def test_patch_is_not_supported_and_proper_code_is_returned():
+    resp = req.patch(file_name)
+    assert resp.status_code == 405, "PATCH is supported or proper error is not displayed"
+
+
+@pytest.mark.run('first')
+def test_proper_response_for_get_request_with_invalid_work_id():
+    res = req.get_post_response(file_name)
+    work_id = int(res.content.decode('UTF-8')) + 2
+    work_id_str = str(work_id)
+    resp = req.get_encoded_password(work_id_str)
+    # print(resp.status_code)
+    assert resp.status_code == 400, "proper error message is not displayed when invalid ID is passed to a get request"
+
+
 @pytest.mark.run('second')
+def test_app_supports_multiple_concurrent_post_requests():
+    url = req.base_url() + "/hash"
+    with FuturesSession() as session:
+        futures = [session.post(url, data='{"password":"angrymonkey"}') for _ in range(100)]
+        for future in futures:
+            val = future.result().status_code
+            # print(datetime.datetime.now())
+            assert val == 200, "one or more post calls are failing while running concurrently"
+
+
+@pytest.mark.run('second')
+def test_it_supports_multiple_get_requests_simultaneously():
+    res = req.get_post_response(file_name)
+    work_id = res.content.decode('UTF-8')
+    get_url = req.base_url() + "/hash/" + work_id
+    with FuturesSession() as session:
+        futures = [session.get(get_url) for _ in range(100)]
+        for future in futures:
+            val = future.result().status_code
+            print(datetime.datetime.now())
+            assert val == 200, "one or more get calls are failing while running concurrently"
+
+
+@pytest.mark.run('third')
 def test_shutdown():
     shut_dwn = req.shutdown()
     cont_len = len(shut_dwn.content.decode('UTF-8'))
@@ -136,7 +190,7 @@ def test_shutdown():
                         "response "
 
 
-@pytest.mark.run('second')
+@pytest.mark.run('third')
 def test_it_allows_in_flight_password_hashing_while_gracefully_shutdown():
     post_pr = Process(target=req.get_post_response(file_name))
     post_pr.start()
@@ -163,44 +217,3 @@ def test_it_rejects_new_requests_while_shutting_down():
     shut_down_status_code = req.stat.shutdown_status
     assert (shut_down_status_code == 200 and post_status_code == 503), "New request is allowed while shutting down"
 
-
-@pytest.mark.run('second')
-def test_app_supports_multiple_concurrent_post_requests():
-    url = req.base_url() + "/hash"
-    with FuturesSession() as session:
-        futures = [session.post(url, data='{"password":"angrymonkey"}') for _ in range(100)]
-        for future in futures:
-            val = future.result().status_code
-            # print(datetime.datetime.now())
-            assert val == 200, "one or more post calls are failing while running concurrently"
-
-
-@pytest.mark.run('first')
-def test_it_supports_multiple_get_requests_simultaneously():
-    res = req.get_post_response(file_name)
-    work_id = res.content.decode('UTF-8')
-    get_url = req.base_url() + "/hash/" + work_id
-    with FuturesSession() as session:
-        futures = [session.get(get_url) for _ in range(100)]
-        for future in futures:
-            val = future.result().status_code
-            print(datetime.datetime.now())
-            assert val == 200, "one or more get calls are failing while running concurrently"
-
-
-@pytest.mark.run('first')
-def test_delete_is_not_supported_and_proper_code_is_returned():
-    res = req.get_post_response(file_name)
-    work_id = res.content.decode('UTF-8')
-    resp = req.delete(work_id)
-    assert resp.status_code == 405, "delete is supported or proper error is not displayed"
-
-
-@pytest.mark.run('first')
-def test_proper_response_for_get_request_with_invalid_work_id():
-    res = req.get_post_response(file_name)
-    work_id = int(res.content.decode('UTF-8')) + 2
-    work_id_str = str(work_id)
-    resp = req.get_encoded_password(work_id_str)
-    # print(resp.status_code)
-    assert resp.status_code == 400, "proper error message is not displayed when invalid ID is passed to a get request"
